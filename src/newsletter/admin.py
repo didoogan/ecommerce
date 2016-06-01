@@ -6,7 +6,7 @@ from .forms import SignUpForm
 from .models import SignUp
 
 class SignUpAdmin(admin.ModelAdmin):
-	list_display = ["__unicode__", "timestamp", "updated"]
+	list_display = ["__str__", "timestamp", "updated"]
 	form = SignUpForm
 	# class Meta:
 	# 	model = SignUp
