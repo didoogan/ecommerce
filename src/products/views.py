@@ -1,11 +1,45 @@
 
+from django.contrib import messages
 from django.db.models import Q
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render,get_object_or_404, redirect
 from django.utils import timezone
 
-from .models import Product
+from .models import Product, Variation
+
+from .forms import VariationInventoryFormSet
+
+class VariationListView(ListView):
+	model = Variation
+	queryset = Variation.objects.all()
+
+	def get_context_data(self, *args, **kwargs):
+		context = super(VariationListView, self).get_context_data(*args, **kwargs)
+		context['formset'] = VariationInventoryFormSet(queryset=self.get_queryset())
+		return context
+
+	def get_queryset(self, *args, **kwargs):
+		product_pk = self.kwargs.get("pk")
+		if product_pk:
+			product = get_object_or_404(Product, pk=product_pk)
+			queryset = Variation.objects.filter(product=product)
+		return queryset	
+
+	def post(self, request, *args, **kwargs):
+		formset = VariationInventoryFormSet(request.POST, request.FILES)
+		if formset.is_valid():
+			formset.save(commit=False)
+			for form in formset:
+				new_item = form.save(commit=False)
+				product_pk = self.kwargs.get("pk")
+				product = get_object_or_404(Product, pk=product_pk)
+				new_item.product = product
+				new_item.save()
+
+			messages.success(request, "Учет запасов успешно изменен.")
+			return redirect("products")
+		raise Http404			
 
 class ProductListView(ListView):
 	model = Product
