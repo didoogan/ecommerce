@@ -26,6 +26,20 @@
   <body>
   {% include 'navbar.html' %}
 
+  {% if messages %}
+
+  <div class='container'>
+  <div class='alert alert-success text-center'>
+    {% for message in messages %}
+      <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p><br />
+    {% endfor %}
+  </div>
+  </div>
+  <ul class="messages">
+      
+  </ul>
+  {% endif %}
+
 {% block jumbotron %}
           
             {% endblock %}
@@ -34,6 +48,7 @@
 
           
             {% block content %}
+
 
             {% endblock %}
               
