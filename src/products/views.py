@@ -7,10 +7,10 @@ from django.shortcuts import render,get_object_or_404, redirect
 from django.utils import timezone
 
 from .models import Product, Variation
-
+from .mixins import StaffRequiredMixin, LoginRequiredMixin
 from .forms import VariationInventoryFormSet
 
-class VariationListView(ListView):
+class VariationListView(StaffRequiredMixin, ListView):
 	model = Variation
 	queryset = Variation.objects.all()
 
