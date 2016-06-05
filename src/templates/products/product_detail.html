@@ -1,4 +1,27 @@
 {%  extends "base.html" %}
+<script type="text/javascript">
+{%  block jquery %}
+
+function set_price() {
+	var price = $(".variation-select option:selected").attr("data-price");
+	var sale_price = $(".variation-select option:selected").attr("data-sale-price");
+	if(sale_price != "" && sale_price != "None" && sale_price != null) {
+		$("#price").html("<h3>" + sale_price + " <small style='color:red;text-decoration:line-through;'>" + price + "</small></h3>");
+	} else {
+		$("#price").text(price);
+	}
+}
+set_price();
+
+
+
+$(".variation-select").change(function() {
+	set_price()
+});
+
+
+{% endblock %}
+</script>
 
 {%  block content %}
 <div class='row'>
@@ -18,11 +41,11 @@
 </div>
 
 <div class='col-sm-4'>
-<h3>{{  object.price }}</h3>
+<h3 id='price'>{{  object.price }}</h3>
 {%  if object.variation_set.count > 1 %}
-<select class="form-control">
+<select class="form-control variation-select">
 {% for vari_object in object.variation_set.all %} <br />
-	<option value="{{  vari_object.id }}">{{  vari_object }}</option>
+	<option data-sale-price="{{  vari_object.sale_price }}" data-price="{{  vari_object.price }}" value="{{  vari_object.id }}">{{  vari_object }}</option>
 {% endfor %}
 
 </select>
