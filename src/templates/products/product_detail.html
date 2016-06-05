@@ -1,4 +1,5 @@
 {%  extends "base.html" %}
+
 <script type="text/javascript">
 {%  block jquery %}
 
@@ -6,7 +7,7 @@ function set_price() {
 	var price = $(".variation-select option:selected").attr("data-price");
 	var sale_price = $(".variation-select option:selected").attr("data-sale-price");
 	if(sale_price != "" && sale_price != "None" && sale_price != null) {
-		$("#price").html("<h3>" + sale_price + " <small style='color:red;text-decoration:line-through;'>" + price + "</small></h3>");
+		$("#price").html("<h3>" + sale_price + " <small class='orig_price'>" + " изначальная цена " + price + "</small></h3>");
 	} else {
 		$("#price").text(price);
 	}
@@ -41,16 +42,24 @@ $(".variation-select").change(function() {
 </div>
 
 <div class='col-sm-4'>
-<h3 id='price'>{{  object.price }}</h3>
+
 {%  if object.variation_set.count > 1 %}
+<h3 id='price'>{{  object.variation_set.first.price }}</h3>
 <select class="form-control variation-select">
 {% for vari_object in object.variation_set.all %} <br />
 	<option data-sale-price="{{  vari_object.sale_price }}" data-price="{{  vari_object.price }}" value="{{  vari_object.id }}">{{  vari_object }}</option>
 {% endfor %}
 
 </select>
+{%  else %}
+<h3 id="price">	{%  if object.variation_set.first.sale_price %}
+{{ object.variation_set.first.sale_price }}
+<small class="orig_price">изначальная цена {{ object.variation_set.first.price }}</small>
 
-
+{%  else %}
+{{ object.variation_set.first.price }}
+{%  endif %}
+</h3>
 {%  endif %}
 <br />
 <a href="">Добавить в корзину</a>
