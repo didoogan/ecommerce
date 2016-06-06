@@ -74,18 +74,22 @@ $(".variation-select").change(function() {
 <i class="fa fa-github-square fa-3x" aria-hidden="true"></i></a>
 </p>
 <h4>Сопутствующие товары</h4>
-{% for product in related %} 
+<div class="row">
+	{% for product in related %} 
+	<div class='col-xs-6'>
+		<div class="thumbnail text-center">
+			<h4><a href='{{  product.get_absolute_url }}'>{{  product.title }}</a><br /></h4>
+			{%  if product.get_image_url %}
+			<a href='{{  product.get_absolute_url }}'><img class='img-responsive' src="{{  product.get_image_url }}"></a><br />
 
-{%  if product.get_image_url %}
-	<img class='img-responsive' src="{{  product.get_image_url }}"><br />
-
-{%  else %}
-
-	<a href='{{  product.get_absolute_url }}'>{{  product.title }}</a><br />
-
-{%  endif %}
-{%  endfor %}
-</div>
-
+			{%  endif %}
+			
+		</div>
+	</div>
+				
+		{%  cycle '' '</div><div class="row"' %}
+		{%  endfor %}
+	</div>
+	</div>
 </div>
 {%  endblock %}
