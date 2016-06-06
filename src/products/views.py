@@ -6,9 +6,27 @@ from django.views.generic.detail import DetailView
 from django.shortcuts import render,get_object_or_404, redirect
 from django.utils import timezone
 
-from .models import Product, Variation
+from .models import Product, Variation, Category
 from .mixins import StaffRequiredMixin, LoginRequiredMixin
 from .forms import VariationInventoryFormSet
+
+class CategoryLiseView(ListView):
+	model = Category
+	queryset = Category.objects.all()
+	template_name = "products/product_list.html"
+
+class CategoryDetailView(DetailView):
+	model = Category	
+
+
+	def get_context_data(self, *args, **kwargs):
+		context = super(CategoryDetailView, self).get_context_data(*args, **kwargs)
+		obj = self.get_object()
+		product_set = obj.product_set.all()
+		default_products = obj.default_category.all()
+		products = (  product_set | default_products ).distinct()
+		context["products"] = products
+		return context
 
 class VariationListView(StaffRequiredMixin, ListView):
 	model = Variation
@@ -67,10 +85,18 @@ class ProductListView(ListView):
 				qs = (qs | qs2).distinct()
 			except:
 				pass
-		return qs		
+		return qs
 
+import random
 class ProductDetailView(DetailView):
 	model = Product
+
+	def get_context_data(self, *args, **kwargs):
+		context = super(ProductDetailView, self).get_context_data(*args, **kwargs)
+		instence = self.get_object()
+		context["related"] = sorted(Product.objects.get_related(instence)[:6], key=lambda x: random.random(), reverse=True)
+		return context
+
 
 def product_detail_veiew_func(request, id):
 	#product_instance = Product.objects.get(id=id)

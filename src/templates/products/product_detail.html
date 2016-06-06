@@ -30,11 +30,9 @@ $(".variation-select").change(function() {
 <div class='col-sm-8'>
 <h2>{{  object.title }}</h2>
 
-{%  if object.productimage_set.count > 0 %}
+{%  if object.get_image_url %}
 	<div>
-	{%  for img in object.productimage_set.all %}
-		<img class='img-responsive' src="{{  img.image.url }}">
-	{%  endfor %}
+		<img class='img-responsive' src="{{  object.get_image_url }}">
 	</div>
 {%  endif %}
 <p class='lead'>{{  object.description }}</p>
@@ -75,7 +73,18 @@ $(".variation-select").change(function() {
 <a href="#">
 <i class="fa fa-github-square fa-3x" aria-hidden="true"></i></a>
 </p>
-<h4>Вам может понадобиться</h4>
+<h4>Сопутствующие товары</h4>
+{% for product in related %} 
+
+{%  if product.get_image_url %}
+	<img class='img-responsive' src="{{  product.get_image_url }}"><br />
+
+{%  else %}
+
+	<a href='{{  product.get_absolute_url }}'>{{  product.title }}</a><br />
+
+{%  endif %}
+{%  endfor %}
 </div>
 
 </div>

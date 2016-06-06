@@ -12,7 +12,14 @@ class ProductManager(models.Manager):
 		return ProductQuerySet(self.model, using=self._db)
 
 	def all(self, *args, **kwargs):
-		return self.get_queryset()			
+		return self.get_queryset().active()	
+
+	def get_related(self, instance):
+		products_one = self.get_queryset().filter(categories__in=instance.categories.all())	
+		products_two = self.get_queryset().filter(default=instance.default)	
+		qs = (products_one | products_two).exclude(id=instance.id).distinct()
+		#qs = self.get_queryset()
+		return qs
 
 
 class Product(models.Model):
@@ -20,6 +27,9 @@ class Product(models.Model):
 	description = models.TextField(blank=True, null=True)
 	price = models.DecimalField(decimal_places=2, max_digits=20)
 	active = models.BooleanField(default=True)
+	categories = models.ManyToManyField('Category', blank=True)
+	default = models.ForeignKey('Category', related_name='default_category', null=True, blank=True)
+
 
 	objects = ProductManager()
 
@@ -27,7 +37,13 @@ class Product(models.Model):
 		return self.title
 
 	def get_absolute_url(self):
-		return reverse("product_detail", kwargs={"pk": self.pk})	
+		return reverse("product_detail", kwargs={"pk": self.pk})
+
+	def get_image_url(self):
+		img = self.productimage_set.first()
+		if img:
+			return img.image.url
+		return img #None			
 
 class Variation(models.Model):
 	product = models.ForeignKey(Product)
@@ -77,3 +93,24 @@ class ProductImage(models.Model):
 
 	def __str__(self):
 		return self.product.title					
+
+
+class Category(models.Model):
+	title = models.CharField(max_length=120, unique=True)
+	slug = models.SlugField(unique=True)
+	description = models.TextField(null=True, blank=True)
+	active = models.BooleanField(default=True)
+	timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+	def __str__(self):
+		return self.title
+
+	def get_absolute_url(self):
+		return reverse("category_detail", kwargs={"slug":self.slug})		
+
+
+
+
+
+
+
