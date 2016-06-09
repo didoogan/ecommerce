@@ -22,18 +22,7 @@
               <input type="text" class="form-control" placeholder="Search" name="q">
             </div>
             </form>
-            <!-- <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li class="divider"></li>
-                <li class="dropdown-header">Nav header</li>
-                <li><a href="#">Separated link</a></li>
-                <li><a href="#">One more separated link</a></li>
-              </ul>
-            </li> -->
+            
           </ul>
 
 
@@ -42,20 +31,40 @@
             <li><a href="{% url 'auth_logout' %}">Logout</a></li>
             {% else %}
             <li><a href="{% url 'registration_register' %}">Register</a></li>
-            {% endif %}
-          </ul>
+            {% if not request.user.is_authenticated and not "/accounts/login" in request.get_full_path %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Войти <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
 
-          {% if not request.user.is_authenticated and not "/accounts/login" in request.get_full_path %}
-            <form class='navbar-form navbar-right' method='POST' action='{% url "auth_login" %}'>{% csrf_token %}
+                
+            <form class='navbar-form ' method='POST' action='{% url "auth_login" %}'>{% csrf_token %}
               <div class='form-group'>
                   <input type='text' class='form-control' name='username' placeholder='Username' /> 
               </div>
               <div class='form-group'>
                   <input type='password' class='form-control' name='password' placeholder='Password' />
               </div>
-              <button type='submit' class='btn btn-default'>Login</button>
+              <button type='submit' class='btn btn-default btn-block'>Войти</button>
+              <p class="text-center"><a href="{%  url 'auth_password_reset' %}">Забыл пароль ?</a></p>
+         
           </form>
-          {% endif %}
+
+
+
+                <!-- <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Nav header</li>
+                <li><a href="#">Separated link</a></li>
+                <li><a href="#">One more separated link</a></li> -->
+              </ul>
+            </li>
+            {% endif %}
+            {% endif %}
+          </ul>
+
+          
 
 
         </div><!--/.nav-collapse -->
