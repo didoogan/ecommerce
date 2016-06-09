@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import render
 
+from products.models import ProductFeatued
 from .forms import ContactForm, SignUpForm
 from .models import SignUp
 
@@ -9,9 +10,11 @@ from .models import SignUp
 def home(request):
 	title = 'Sign Up Now'
 	form = SignUpForm(request.POST or None)
+	featured_image = ProductFeatued.objects.filter(active=True).order_by("?").first()
 	context = {
 		"title": title,
-		"form": form
+		"form": form,
+		"featured_image": featured_image,
 	}
 	if form.is_valid():
 		#form.save()
